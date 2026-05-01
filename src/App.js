@@ -1,130 +1,98 @@
 import React, { useState } from 'react';
 
-// --- COMPONENTS ---
+// --- MOCK DATABASE ---
+const clientData = {
+  'Client A': { gstStatus: 'Filed', itrStatus: 'Pending', lastAudit: '2 days ago' },
+  'Client B': { gstStatus: 'Pending', itrStatus: 'In Review', lastAudit: '5 days ago' },
+  'Client C': { gstStatus: 'Overdue', itrStatus: 'Not Started', lastAudit: 'Never' },
+};
 
+// --- CALCULATOR COMPONENT ---
 const GSTCalculator = () => {
   const [amount, setAmount] = useState(0);
   const [gstRate, setGstRate] = useState(0.18);
-  const rates = [
-    { label: '5% - Essentials', value: 0.05 },
-    { label: '12% - Standard', value: 0.12 },
-    { label: '18% - Services', value: 0.18 },
-    { label: '28% - Luxury', value: 0.28 },
-  ];
   const taxAmount = Number(amount) * gstRate;
   const total = Number(amount) + taxAmount;
 
   return (
     <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-      <h3 style={{ marginBottom: '15px', fontSize: '0.8rem', fontWeight: 'bold', letterSpacing: '1px', color: '#3b82f6' }}>TAX CALCULATOR</h3>
-      <input 
-        type="number" placeholder="Base Amount"
-        onChange={(e) => setAmount(e.target.value)}
-        style={{ width: '100%', padding: '12px', borderRadius: '10px', background: '#111', border: '1px solid #333', color: 'white', marginBottom: '15px' }}
-      />
-      <select 
-        onChange={(e) => setGstRate(parseFloat(e.target.value))}
-        value={gstRate}
-        style={{ width: '100%', padding: '12px', borderRadius: '10px', background: '#111', border: '1px solid #333', color: 'white', marginBottom: '20px' }}
-      >
-        {rates.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+      <h3 style={{ marginBottom: '15px', fontSize: '0.8rem', fontWeight: 'bold', color: '#3b82f6' }}>QUICK CALC</h3>
+      <input type="number" placeholder="Base ₹" onChange={(e) => setAmount(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: '#111', border: '1px solid #333', color: 'white', marginBottom: '10px' }} />
+      <select onChange={(e) => setGstRate(parseFloat(e.target.value))} style={{ width: '100%', padding: '10px', borderRadius: '8px', background: '#111', border: '1px solid #333', color: 'white' }}>
+        <option value="0.05">5%</option>
+        <option value="0.12">12%</option>
+        <option value="0.18" selected>18%</option>
+        <option value="0.28">28%</option>
       </select>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <div style={{ flex: 1, padding: '15px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '15px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-          <p style={{ fontSize: '0.6rem', color: '#3b82f6', fontWeight: 'bold' }}>TAX</p>
-          <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>₹{taxAmount.toLocaleString('en-IN')}</p>
-        </div>
-        <div style={{ flex: 1, padding: '15px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '15px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-          <p style={{ fontSize: '0.6rem', color: '#10b981', fontWeight: 'bold' }}>TOTAL</p>
-          <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>₹{total.toLocaleString('en-IN')}</p>
-        </div>
-      </div>
+      <div style={{ marginTop: '15px', fontSize: '0.9rem', fontWeight: 'bold' }}>Total: ₹{total.toLocaleString('en-IN')}</div>
     </div>
   );
 };
 
 // --- MAIN APP ---
-
 export default function App() {
   const [page, setPage] = useState('landing');
   const [activeTab, setActiveTab] = useState('Dashboard');
-  
-  const commonBg = { minHeight: '100vh', backgroundColor: '#02040a', color: 'white', fontFamily: 'Inter, system-ui, sans-serif' };
+  const [selectedClient, setSelectedClient] = useState('Client A');
 
   if (page === 'landing') {
     return (
-      <div style={{ ...commonBg, backgroundColor: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '5rem', fontWeight: '900', letterSpacing: '-3px', marginBottom: '10px' }}>VISTARA</h1>
-        <p style={{ color: '#555', fontSize: '1.2rem', marginBottom: '40px' }}>Precision Architecture for Tax Professionals.</p>
-        <button onClick={() => setPage('dashboard')} style={{ padding: '18px 50px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '15px', fontWeight: 'bold', cursor: 'pointer', fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(37,99,235,0.3)' }}>
-          Initialize Session →
-        </button>
+      <div style={{ minHeight: '100vh', backgroundColor: '#050505', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+        <h1 style={{ fontSize: '4rem', fontWeight: '900', marginBottom: '20px' }}>VISTARA</h1>
+        <button onClick={() => setPage('dashboard')} style={{ padding: '15px 40px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>Initialize Session</button>
       </div>
     );
   }
 
   return (
-    <div style={{ ...commonBg, display: 'flex' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#02040a', color: 'white', display: 'flex', fontFamily: 'sans-serif' }}>
       {/* Sidebar */}
-      <aside style={{ width: '280px', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '40px 20px', display: 'flex', flexDirection: 'column', background: '#050505' }}>
-        <h2 style={{ color: '#2563eb', fontSize: '1.5rem', fontWeight: '900', marginBottom: '60px', textAlign: 'center' }}>VISTARA</h2>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {['Dashboard', 'Vault', 'Audit'].map(item => (
-            <div 
-              key={item}
-              onClick={() => setActiveTab(item)}
-              style={{ 
-                padding: '15px 25px', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem',
-                backgroundColor: activeTab === item ? 'rgba(255,255,255,0.05)' : 'transparent',
-                color: activeTab === item ? 'white' : '#555',
-                transition: '0.3s'
-              }}
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-
-        <button onClick={() => setPage('landing')} style={{ marginTop: 'auto', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', opacity: '0.5' }}>LOGOUT</button>
+      <aside style={{ width: '260px', borderRight: '1px solid #222', padding: '40px 20px', display: 'flex', flexDirection: 'column' }}>
+        <h2 style={{ color: '#2563eb', fontWeight: '900', marginBottom: '50px' }}>VISTARA</h2>
+        {['Dashboard', 'Vault', 'Audit'].map(item => (
+          <div key={item} onClick={() => setActiveTab(item)} style={{ padding: '15px', borderRadius: '10px', cursor: 'pointer', backgroundColor: activeTab === item ? '#111' : 'transparent', color: activeTab === item ? 'white' : '#555', marginBottom: '5px' }}>{item}</div>
+        ))}
+        <button onClick={() => setPage('landing')} style={{ marginTop: 'auto', background: 'none', border: 'none', color: 'red', cursor: 'pointer' }}>LOGOUT</button>
       </aside>
 
-      {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '50px', overflowY: 'auto' }}>
-        <header style={{ marginBottom: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <div>
-            <p style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#2563eb', letterSpacing: '2px', marginBottom: '10px' }}>SYSTEM // {activeTab.toUpperCase()}</p>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{activeTab === 'Dashboard' ? 'Working Model' : activeTab}</h2>
-          </div>
-          <div style={{ color: '#10b981', fontSize: '0.7rem', fontWeight: 'bold', border: '1px solid #10b98144', padding: '5px 15px', borderRadius: '50px' }}>SECURE LINE ACTIVE</div>
+      {/* Main Content */}
+      <main style={{ flex: 1, padding: '50px' }}>
+        <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold' }}>{activeTab}</h2>
+          <select onChange={(e) => setSelectedClient(e.target.value)} style={{ padding: '10px', borderRadius: '8px', background: '#111', color: 'white', border: '1px solid #333' }}>
+            {Object.keys(clientData).map(name => <option key={name} value={name}>{name}</option>)}
+          </select>
         </header>
 
-        {/* Dynamic Content based on Sidebar */}
         {activeTab === 'Dashboard' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '30px' }}>
-            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '30px', padding: '40px' }}>
-              <h3 style={{ marginBottom: '20px' }}>Client Intelligence</h3>
-              <div style={{ color: '#444', fontSize: '0.9rem' }}>No anomalies detected in current batch. All GST filings synced.</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px' }}>
+            <div style={{ background: '#111', padding: '30px', borderRadius: '20px' }}>
+              <h3 style={{ marginBottom: '20px' }}>Status for {selectedClient}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span>GST Return:</span>
+                <span style={{ color: clientData[selectedClient].gstStatus === 'Filed' ? '#10b981' : '#ef4444' }}>{clientData[selectedClient].gstStatus}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span>ITR Status:</span>
+                <span>{clientData[selectedClient].itrStatus}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Last Audit:</span>
+                <span style={{ color: '#555' }}>{clientData[selectedClient].lastAudit}</span>
+              </div>
             </div>
             <GSTCalculator />
           </div>
         )}
 
         {activeTab === 'Vault' && (
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: '30px', padding: '100px', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '20px' }}>📁</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '10px' }}>Drop Client Documents Here</h3>
-            <p style={{ color: '#555' }}>Supports PDF, XML, and Excel. Auto-encryption enabled.</p>
-            <button style={{ marginTop: '30px', padding: '12px 30px', borderRadius: '10px', background: 'white', color: 'black', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>Browse Files</button>
+          <div style={{ border: '2px dashed #222', borderRadius: '20px', padding: '100px', textAlign: 'center' }}>
+            <p>Upload documents for <strong>{selectedClient}</strong></p>
+            <button style={{ marginTop: '20px', padding: '10px 20px', borderRadius: '8px' }}>Select PDF</button>
           </div>
         )}
 
-        {activeTab === 'Audit' && (
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '30px', padding: '40px' }}>
-             <h3 style={{ marginBottom: '20px' }}>Audit History</h3>
-             <p style={{ color: '#555' }}>Select a client to view full transaction logs.</p>
-          </div>
-        )}
+        {activeTab === 'Audit' && <div style={{ background: '#111', padding: '30px', borderRadius: '20px' }}>No active audit alerts for {selectedClient}.</div>}
       </main>
     </div>
   );
