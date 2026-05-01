@@ -5,35 +5,58 @@ export default function App() {
   const [client, setClient] = useState('Client A');
   const [amount, setAmount] = useState('');
   const [gstRate, setGstRate] = useState(0.18);
+  const [hovered, setHovered] = useState(null);
 
   const profiles = {
-    'Client A': { status: 'Operational', color: '#10b981', reach: '95%' },
-    'Client B': { status: 'Action Required', color: '#f59e0b', reach: '60%' },
-    'Client C': { status: 'Critical', color: '#ef4444', reach: '15%' }
+    'Client A': { status: 'Operational', color: '#10b981', reach: '95%', files: ['Inv_001.pdf', 'Tax_Summary_Q1.xlsx'] },
+    'Client B': { status: 'Action Required', color: '#f59e0b', reach: '60%', files: ['Incomplete_Form_16.pdf'] },
+    'Client C': { status: 'Critical', color: '#ef4444', reach: '15%', files: [] }
   };
 
-  // Math logic - simple and clean
   const tax = Number(amount) * gstRate;
   const total = Number(amount) + tax;
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#02040a', color: 'white', fontFamily: 'sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'radial-gradient(circle at top left, #050505, #02040a)', color: 'white', fontFamily: '"Inter", sans-serif' }}>
       
       {/* Sidebar */}
-      <aside style={{ width: '240px', background: '#050505', borderRight: '1px solid #1a1a1a', padding: '40px 20px' }}>
-        <h2 style={{ color: '#2563eb', fontWeight: '900', marginBottom: '40px' }}>VISTARA</h2>
+      <aside style={{ width: '260px', background: 'rgba(5, 5, 5, 0.8)', backdropFilter: 'blur(10px)', borderRight: '1px solid #1a1a1a', padding: '40px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '50px' }}>
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#2563eb', boxShadow: '0 0 15px #2563eb' }}></div>
+          <h2 style={{ letterSpacing: '4px', fontWeight: '900', margin: 0 }}>VISTARA</h2>
+        </div>
+        
         {['Dashboard', 'Vault'].map(item => (
-          <div key={item} onClick={() => setActiveTab(item)} style={{ padding: '12px', cursor: 'pointer', color: activeTab === item ? '#fff' : '#444', fontWeight: 'bold' }}>
+          <div 
+            key={item} 
+            onMouseEnter={() => setHovered(item)}
+            onMouseLeave={() => setHovered(null)}
+            onClick={() => setActiveTab(item)}
+            style={{ 
+              padding: '14px 20px', 
+              cursor: 'pointer', 
+              borderRadius: '12px',
+              transition: '0.3s all ease',
+              marginBottom: '10px',
+              background: activeTab === item ? 'rgba(37, 99, 235, 0.15)' : (hovered === item ? 'rgba(255,255,255,0.05)' : 'transparent'),
+              color: activeTab === item ? '#2563eb' : '#666',
+              border: activeTab === item ? '1px solid rgba(37, 99, 235, 0.3)' : '1px solid transparent'
+            }}
+          >
             {item}
           </div>
         ))}
       </aside>
 
-      {/* Main Area */}
-      <main style={{ flex: 1, padding: '40px' }}>
-        <header style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '1.5rem' }}>{activeTab}</h1>
-          <select value={client} onChange={(e) => setClient(e.target.value)} style={{ background: '#111', color: 'white', border: '1px solid #333', padding: '8px', borderRadius: '5px' }}>
+      {/* Main Content */}
+      <main style={{ flex: 1, padding: '60px' }}>
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '60px' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: '300' }}>{activeTab} <span style={{ color: '#222' }}>/</span> <span style={{ fontSize: '1rem', color: '#666' }}>{client}</span></h1>
+          <select 
+            value={client} 
+            onChange={(e) => setClient(e.target.value)} 
+            style={{ background: '#000', color: 'white', border: '1px solid #222', padding: '12px 20px', borderRadius: '30px', outline: 'none' }}
+          >
             <option>Client A</option>
             <option>Client B</option>
             <option>Client C</option>
@@ -41,52 +64,56 @@ export default function App() {
         </header>
 
         {activeTab === 'Dashboard' ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '30px' }}>
             
-            {/* Status Card */}
-            <div style={{ background: '#0a0a0a', padding: '30px', borderRadius: '20px', border: '1px solid #1a1a1a' }}>
-              <h2 style={{ marginBottom: '10px' }}>{client}</h2>
-              <div style={{ color: profiles[client].color, fontWeight: 'bold', marginBottom: '20px' }}>● {profiles[client].status}</div>
-              <div style={{ fontSize: '0.7rem', color: '#555', marginBottom: '8px', letterSpacing: '1px' }}>COMPLIANCE RATE</div>
-              <div style={{ height: '6px', background: '#1a1a1a', borderRadius: '10px' }}>
-                <div style={{ height: '100%', width: profiles[client].reach, background: profiles[client].color, borderRadius: '10px', transition: '0.5s' }} />
+            {/* Status Section */}
+            <div style={{ background: 'rgba(10, 10, 10, 0.4)', padding: '40px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <p style={{ color: '#444', fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px' }}>CURRENT COMPLIANCE</p>
+              <h2 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>{profiles[client].reach}</h2>
+              <div style={{ height: '4px', background: '#111', borderRadius: '10px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: profiles[client].reach, background: profiles[client].color, transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+              </div>
+              <div style={{ marginTop: '30px', padding: '15px', borderRadius: '15px', background: 'rgba(255,255,255,0.02)', borderLeft: 4px solid ${profiles[client].color} }}>
+                <span style={{ color: '#888' }}>Engine Status:</span> <span style={{ color: profiles[client].color }}>{profiles[client].status}</span>
               </div>
             </div>
 
-            {/* Calculator Card */}
-            <div style={{ background: 'rgba(37, 99, 235, 0.03)', padding: '30px', borderRadius: '20px', border: '1px solid #2563eb44' }}>
-              <h3 style={{ fontSize: '0.8rem', color: '#2563eb', marginBottom: '15px' }}>QUICK GST CALC</h3>
+            {/* Calculator Section */}
+            <div style={{ background: '#050505', padding: '30px', borderRadius: '32px', border: '1px solid #1a1a1a' }}>
+              <h4 style={{ color: '#2563eb', marginBottom: '20px' }}>Quick Ledger</h4>
               <input 
                 type="number" 
-                placeholder="Enter Amount" 
+                placeholder="0.00" 
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)} 
-                style={{ width: '100%', boxSizing: 'border-box', background: '#000', border: '1px solid #333', padding: '12px', color: 'white', borderRadius: '8px', marginBottom: '10px' }} 
+                style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', borderBottom: '1px solid #222', fontSize: '1.5rem', color: 'white', padding: '10px 0', marginBottom: '20px', outline: 'none' }} 
               />
-              <select 
-                onChange={(e) => setGstRate(parseFloat(e.target.value))} 
-                style={{ width: '100%', background: '#000', border: '1px solid #333', padding: '10px', color: 'white', borderRadius: '8px' }}
-              >
-                <option value="0.18">18% GST (Standard)</option>
-                <option value="0.12">12% GST</option>
-                <option value="0.05">5% GST</option>
-                <option value="0.28">28% GST</option>
-              </select>
-              <div style={{ marginTop: '20px', borderTop: '1px solid #222', paddingTop: '15px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#888' }}>
-                  <span>Tax:</span><span>₹{tax.toLocaleString()}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 'bold', marginTop: '5px' }}>
-                  <span>Total:</span><span>₹{total.toLocaleString()}</span>
-                </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '30px' }}>
+                {[0.05, 0.12, 0.18, 0.28].map(rate => (
+                  <button key={rate} onClick={() => setGstRate(rate)} style={{ flex: 1, padding: '8px', borderRadius: '8px', background: gstRate === rate ? '#2563eb' : '#111', color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.7rem' }}>
+                    {rate * 100}%
+                  </button>
+                ))}
               </div>
+              <div style={{ fontSize: '0.9rem', color: '#444' }}>RESULT</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>₹{total.toLocaleString()}</div>
             </div>
 
           </div>
         ) : (
-          <div style={{ padding: '100px', textAlign: 'center', color: '#333' }}>
-            <h2>The Vault</h2>
-            <p>Secure storage for {client} active files.</p>
+          /* Vault Section */
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+            <div style={{ border: '2px dashed #1a1a1a', borderRadius: '24px', padding: '60px', textAlign: 'center', color: '#444' }}>
+              Drop files here to upload to {client} Secure Vault
+            </div>
+            <div style={{ background: '#0a0a0a', borderRadius: '24px', padding: '30px' }}>
+              <h4 style={{ marginBottom: '20px' }}>Recent Documents</h4>
+              {profiles[client].files.length > 0 ? profiles[client].files.map(file => (
+                <div key={file} style={{ padding: '15px', borderBottom: '1px solid #111', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+                  {file} <span>SECURE</span>
+                </div>
+              )) : <div style={{ color: '#333' }}>No files found for this profile.</div>}
+            </div>
           </div>
         )}
       </main>
